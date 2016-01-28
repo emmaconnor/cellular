@@ -36,7 +36,37 @@ class TotalisticCellularAutomaton:
 
     @property
     def lam(self):
-        return 0.0
+        K = self.n_states
+        N = self.radius*2 + 1
+
+        def choose(n, k):
+            if 0 <= k <= n:
+                ntok = 1
+                ktok = 1
+                for t in range(1, min(k, n - k) + 1):
+                    ntok *= n
+                    ktok *= t
+                    n -= 1
+                return ntok // ktok
+            else:
+                return 0
+
+        cache = {}
+        def C(k):
+            if k in cache: return cache[k]
+            if N == 1:
+                result = 1 if k < K else 0
+            elif k < K:
+                result = choose(N + k - 1, k)
+            else:
+                result = sum(C(k - j, N - 1) for j in range(K))
+            cache[k] = result
+            return result
+
+        n0 = sum(C(i) for i in range(len(self.rules)) if self.rules[i] == 0)
+        T = K**N
+            
+        return 1 - n0/T
 
     @property
     def lam_t(self):
