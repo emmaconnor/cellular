@@ -9,12 +9,13 @@ class TotalisticCellularAutomaton:
         self.n_states = 5
         self.symbols = ' .oO0'
         self.radius = 1
-        self.cells = [random.randrange(0, self.n_states) for _ in range(self.n_cells)]
+
+        self.reseed()
 
         self.colors = ['black', 'blue', 'yellow', 'orange', 'red']
 
         n_rules = (2*self.radius + 1) * (self.n_states - 1)
-        self.rules = [0] + [random.randrange(0, self.n_states) for _ in range(n_rules)]
+        self.rules = [0] + [random.randrange(1, self.n_states) for _ in range(n_rules)]
 
     def neighbor_sum(self, pos):
         return sum(self.cells[(pos+i)%self.n_cells] for i in range(-self.radius, self.radius+1))
@@ -24,6 +25,30 @@ class TotalisticCellularAutomaton:
 
     def print_gen(self):
         print(''.join(self.symbols[state] for state in self.cells))
+
+    def decimate(self):
+        nonzeroes = [i for i in range(len(self.rules)) if self.rules[i] != 0]
+        if len(nonzeroes) != 0:
+            self.rules[random.choice(nonzeroes)] = 0
+
+    def reseed(self):
+        self.cells = [random.randrange(0, self.n_states) for _ in range(self.n_cells)]
+
+    @property
+    def lam(self):
+        return 0.0
+
+    @property
+    def lam_t(self):
+        return 0.0
+
+    @property
+    def entropy(self):
+        return 0.0
+
+    @property
+    def entropy_t(self):
+        return 0.0
 
         
 def draw_history(ca, history):
@@ -38,21 +63,33 @@ def draw_history(ca, history):
             state = history[i][j]
             draw.point((j, i), fill=ca.colors[state])
 
-    image.show()
+    return image
 
-        
 
 def main():
     ca = TotalisticCellularAutomaton()
 
-    print(ca.rules)
+    while any(rule != 0 for rule in ca.rules):
 
-    history = [ca.cells]
-    for x in range(1000):
-        ca.next_gen()
-        history.append(ca.cells)
+        ca.reseed()
+        history = [ca.cells]
+        for x in range(1000):
+            ca.next_gen()
+            history.append(ca.cells)
+            if all(cell == 0 for cell in ca.cells):
+                break
 
-    draw_history(ca, history)
+        image = draw_history(ca, history)
+        image.save(''.join(str(r) for r in ca.rules) + '.png')
+        image.show()
+
+        print('[' + ' '.join(str(r) for r in ca.rules) + ']')
+        print(("{:10s}    " * 4).format('lambda', 'lambda_t', 'entropy', 'entropy_t'))
+        print(("{:10.8f}    " * 4).format(ca.lam, ca.lam_t, ca.entropy, ca.entropy_t))
+        ca_class = input("Class: ")
+        observations = input("Observations: ")
+
+        ca.decimate()
 
 
 if __name__ == '__main__':
