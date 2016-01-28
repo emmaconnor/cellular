@@ -40,7 +40,7 @@ class TotalisticCellularAutomaton:
 
     @property
     def lam_t(self):
-        return 0.0
+        return 1.0 - self.rules.count(0) / len(self.rules)
 
     @property
     def entropy(self):
