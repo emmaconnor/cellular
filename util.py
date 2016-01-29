@@ -1,3 +1,10 @@
+
+def product(nums):
+    r = 1
+    for n in nums:
+        r *= n
+    return r
+
 def choose(n, k):
     if 0 <= k <= n:
         ntok = 1
@@ -10,16 +17,9 @@ def choose(n, k):
     else:
         return 0
 
+
 def format_floats(floats):
     fstr = '  '.join('{:10.08f}' for _ in floats)
     return fstr.format(*floats)
 
 
-def get_real_probs(ca, history):
-    total = len(history) * len(history[0])
-
-    c = collections.Counter()
-    for row in history:
-        c.update(row)
-    probs = [c[state]/total for state in range(ca.n_states)]
-    return probs
