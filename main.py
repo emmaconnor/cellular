@@ -1,3 +1,5 @@
+import os
+
 import cellular
 import util
 
@@ -12,6 +14,12 @@ def get_classification():
 
 def main():
     cas_folder = 'cas/'
+
+    try:
+        os.mkdir(cas_folder)
+    except FileExistsError:
+        pass
+
     colors = ['black', 'blue', 'yellow', 'orange', 'red']
 
     ca = cellular.TotalisticCellularAutomaton(400, colors=colors)
