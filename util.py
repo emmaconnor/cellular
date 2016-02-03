@@ -1,3 +1,11 @@
+import colorsys
+import random
+
+def randcolor():
+    hue = random.random()
+    sat = random.randint(700, 1000) / 1000
+    val = random.randint(700, 1000) / 1000
+    return tuple(int(f*255) for f in colorsys.hsv_to_rgb(hue, sat, val))
 
 def product(nums):
     r = 1
