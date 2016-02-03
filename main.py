@@ -3,17 +3,9 @@ import os
 import cellular
 import util
 
-def get_classification():
-    answer = None
-
-    while answer not in ('1', '2', '3', '4'):
-        answer = input("Class: ")
-
-    return answer
-
 
 def main():
-    cas_folder = 'cas/'
+    cas_folder = 'tmp/'
 
     try:
         os.mkdir(cas_folder)
@@ -22,7 +14,7 @@ def main():
 
     colors = ['black', 'blue', 'yellow', 'orange', 'red']
 
-    ca = cellular.TotalisticCellularAutomaton(400, colors=colors)
+    ca = cellular.TotalisticCellularAutomaton(400, colors=colors, radius=1, states=5)
 
     base = str(ca)
 
@@ -34,9 +26,17 @@ def main():
         image = ca.draw()
         image.show()
 
-        classification = get_classification()
 
-        image.save(cas_folder + '{}-{}-{}.png'.format(base, ca, classification))
+        while True:
+            answer = input("Class: ")
+            if answer in ('1', '2', '3', '4'):
+                break
+            else:
+                ca.resume(800)
+                image = ca.draw()
+                image.show()
+
+        image.save(cas_folder + '{}-{}-{}.png'.format(base, ca, answer))
         ca.decimate()
         print()
 
