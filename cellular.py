@@ -35,6 +35,11 @@ class TotalisticCellularAutomaton:
         for n in range(ngens):
             self.next_gen()
 
+    def resume(self, ngens):
+        self.history = [self.history[-1]]
+        self.run(ngens)
+        
+
     def draw(self):
         n = len(self.history)
         m = len(self.history[0])
@@ -76,24 +81,7 @@ class TotalisticCellularAutomaton:
 
     @property
     def lam(self):
-        K = self.n_states
-        N = self.radius*2 + 1
-
-        cache = {}
-        def D(k, n):
-            if (k, n) in cache: return cache[k, n]
-            if n == 1:
-                result = 1 if k < K else 0
-            elif k < K:
-                result = util.choose(n + k - 1, k)
-            else:
-                result = sum(D(k - j, n - 1) for j in range(K))
-            cache[k, n] = result
-            return result
-
-        n0 = sum(D(N, i) for i in range(len(self.rules)) if self.rules[i] == 0)
-        T = K**N
-        return 1 - n0/T
+        return 0
 
     @property
     def lam_t(self):
@@ -108,6 +96,7 @@ class TotalisticCellularAutomaton:
         return 0.0
 
     def get_probs(self, iters=5):
+        """
         N = self.radius*2 + 1
 
         probs = [Fraction(1, self.n_states) for _ in range(self.n_states)]
@@ -121,6 +110,8 @@ class TotalisticCellularAutomaton:
             probs = new_probs
 
         return [float(p) for p in probs]
+        """
+        return [0.0 for _ in range(self.n_states)]
 
     def get_real_probs(self):
         total = len(self.history) * len(self.history[0])
