@@ -2,7 +2,7 @@ import collections
 import itertools
 import random
 
-import util
+from .util import util
 
 from fractions import Fraction
 from PIL import Image, ImageDraw
