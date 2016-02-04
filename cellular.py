@@ -24,9 +24,9 @@ class TotalisticCellularAutomaton:
 
         self.reseed()
 
-        n_rules = (2*self.radius + 1) * (self.n_states - 1)
+        n_rules = (2*self.radius + 1) * (self.n_states - 1) + 1
         if rules is None:
-            self.rules = [0] + [random.randrange(1, self.n_states) for _ in range(n_rules)]
+            self.rules = [0] + [random.randrange(1, self.n_states) for _ in range(n_rules - 1)]
         else:
             if len(rules) != n_rules:
                 raise ValueError("Invalid number of rules. Expected {}.".format(n_rules))
