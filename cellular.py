@@ -6,6 +6,7 @@ from .util import util
 
 from fractions import Fraction
 from PIL import Image, ImageDraw
+from math import log2
 
 
 class TotalisticCellularAutomaton:
@@ -81,7 +82,16 @@ class TotalisticCellularAutomaton:
 
     @property
     def lam(self):
-        return 0
+        T = pow(self.n_states, 2*self.radius +1)
+        def n(s):
+            Ck = [1, 3, 6, 10, 15, 18, 19, 18, 15, 10, 6, 3, 1]
+            tot = 0
+            for i in range(0, len(self.rules)):
+                if self.rules[i] == s:
+                    tot += Ck[i]
+            return tot
+
+        return 1.0 - n(0) / T
 
     @property
     def lam_t(self):
@@ -89,11 +99,38 @@ class TotalisticCellularAutomaton:
 
     @property
     def entropy(self):
-        return 0.0
+        def n(s):
+            Ck = [1, 3, 6, 10, 15, 18, 19, 18, 15, 10, 6, 3, 1]
+            tot = 0
+            for i in range(0, len(self.rules)):
+                if self.rules[i] == s:
+                    tot += Ck[i]
+            return tot
+        ent = 0
+        for i in range(0, self.n_states):
+            p_s = n(i) / pow(self.n_states, 2*self.radius+1)
+            if p_s == 0:
+                continue
+            else:
+                ent += p_s * log2(p_s)
+        return -1 * ent
 
     @property
     def entropy_t(self):
-        return 0.0
+        ent = 0
+
+        # iterate through each rule
+        for i in range(0, self.n_states):
+            # double precision since this is python 3
+            p_s = self.rules.count(i) / len(self.rules)
+            
+            # special case
+            if p_s == 0:
+                continue
+            else:
+                ent += p_s * log2(p_s)
+
+        return -1 * ent
 
     def get_probs(self, iters=5):
         """
