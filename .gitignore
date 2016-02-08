@@ -1,6 +1,7 @@
 # Results and images
 cas/
 bg/
+tmp/
 
 # OS X stuff
 .DS_Store
