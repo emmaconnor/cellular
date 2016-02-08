@@ -1,7 +1,6 @@
 import os
 
-import cellular
-import util
+from cellular import cellular
 
 
 def main():
