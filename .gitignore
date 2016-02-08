@@ -3,6 +3,9 @@ cas/
 bg/
 tmp/
 
+# swap files
+*.swp
+
 # OS X stuff
 .DS_Store
 
