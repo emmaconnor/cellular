@@ -82,6 +82,7 @@ class TotalisticCellularAutomaton:
 
     @property
     def lam(self):
+        """Currently only works with machines of radius 1 and 5 states"""
         T = pow(self.n_states, 2*self.radius +1)
         def n(s):
             Ck = [1, 3, 6, 10, 15, 18, 19, 18, 15, 10, 6, 3, 1]
@@ -117,23 +118,10 @@ class TotalisticCellularAutomaton:
 
     @property
     def entropy_t(self):
-        ent = 0
-
-        # iterate through each rule
-        for i in range(0, self.n_states):
-            # double precision since this is python 3
-            p_s = self.rules.count(i) / len(self.rules)
-            
-            # special case
-            if p_s == 0:
-                continue
-            else:
-                ent += p_s * log2(p_s)
-
-        return -1 * ent
+        probs = [self.rules.count(state) / len(self.rules) for state in range(self.n_states)]
+        return -sum(p*log2(p) for p in probs if p != 0)
 
     def get_probs(self, iters=5):
-        """
         N = self.radius*2 + 1
 
         probs = [Fraction(1, self.n_states) for _ in range(self.n_states)]
@@ -147,8 +135,10 @@ class TotalisticCellularAutomaton:
             probs = new_probs
 
         return [float(p) for p in probs]
-        """
-        return [0.0 for _ in range(self.n_states)]
+
+    @property
+    def prob_entropy(self):
+        return sum(p*log2(p) for p in self.get_probs() if p != 0)
 
     def get_real_probs(self):
         total = len(self.history) * len(self.history[0])
