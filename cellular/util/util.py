@@ -7,6 +7,12 @@ def randcolor():
     val = random.randint(700, 1000) / 1000
     return tuple(int(f*255) for f in colorsys.hsv_to_rgb(hue, sat, val))
 
+def randcolor_f():
+    hue = random.random()
+    sat = random.randint(700, 1000) / 1000
+    val = random.randint(700, 1000) / 1000
+    return tuple(colorsys.hsv_to_rgb(hue, sat, val))
+
 def product(nums):
     r = 1
     for n in nums:
