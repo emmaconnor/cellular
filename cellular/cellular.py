@@ -34,10 +34,13 @@ class TotalisticCellularAutomaton:
 
     def run(self, ngens):
         for n in range(ngens):
-            self.next_gen()
+            c = self.next_gen()
+            if c is not None:
+                return c
 
     def resume(self, ngens):
         self.history = [self.history[-1]]
+        self.history_set = {tuple(self.history[0])}
         self.run(ngens)
         
 
@@ -57,19 +60,20 @@ class TotalisticCellularAutomaton:
 
     def print_stats(self):
         print('[' + ' '.join(str(r) for r in self.rules) + ']')
-        print(("{:10s}    " * 4).format('lambda', 'lambda_t', 'entropy', 'entropy_t'))
-        print(("{:10.8f}    " * 4).format(self.lam, self.lam_t, self.entropy, self.entropy_t))
-        print("Modeled: ")
-        print(util.format_floats(self.get_probs()))
-        print("Actual: ")
-        print(util.format_floats(self.get_real_probs()))
+        print(("{:10s}    " * 6).format('lambda', 'lambda_t', 'entropy', 'entropy_t', 'entropy_p', 'entropy_a'))
+        print(("{:10.8f}    " * 6).format(self.lam, self.lam_t, self.entropy, self.entropy_t, self.entropy_p, self.entropy_a))
         
     def neighbor_sum(self, pos):
         return sum(self.cells[(pos+i)%self.n_cells] for i in range(-self.radius, self.radius+1))
             
     def next_gen(self):
         self.cells = [self.rules[self.neighbor_sum(i)] for i in range(self.n_cells)]
+        if self.cells == self.history[-1]:
+            return 1
+        elif tuple(self.cells) in self.history_set:
+            return 2
         self.history.append(self.cells)
+        self.history_set.add(tuple(self.cells))
 
     def decimate(self):
         nonzeroes = [i for i in range(len(self.rules)) if self.rules[i] != 0]
@@ -79,6 +83,7 @@ class TotalisticCellularAutomaton:
     def reseed(self):
         self.cells = [random.randrange(0, self.n_states) for _ in range(self.n_cells)]
         self.history = [self.cells]
+        self.history_set = {tuple(self.cells)}
 
     @property
     def lam(self):
@@ -137,8 +142,12 @@ class TotalisticCellularAutomaton:
         return [float(p) for p in probs]
 
     @property
-    def prob_entropy(self):
-        return sum(p*log2(p) for p in self.get_probs() if p != 0)
+    def entropy_p(self):
+        return -sum(p*log2(p) for p in self.get_probs() if p != 0)
+
+    @property
+    def entropy_a(self):
+        return -sum(p*log2(p) for p in self.get_real_probs() if p != 0)
 
     def get_real_probs(self):
         total = len(self.history) * len(self.history[0])
