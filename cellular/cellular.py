@@ -88,13 +88,13 @@ class TotalisticCellularAutomaton:
     @property
     def lam(self):
         """Currently only works with machines of radius 1 and 5 states"""
+        N = 2*self.radius + 1
         T = pow(self.n_states, 2*self.radius +1)
         def n(s):
-            Ck = [1, 3, 6, 10, 15, 18, 19, 18, 15, 10, 6, 3, 1]
             tot = 0
             for i in range(0, len(self.rules)):
                 if self.rules[i] == s:
-                    tot += Ck[i]
+                    tot += util.C(N, i, self.n_states-1)
             return tot
 
         return 1.0 - n(0) / T
@@ -105,16 +105,16 @@ class TotalisticCellularAutomaton:
 
     @property
     def entropy(self):
+        N = 2*self.radius + 1
         def n(s):
-            Ck = [1, 3, 6, 10, 15, 18, 19, 18, 15, 10, 6, 3, 1]
             tot = 0
             for i in range(0, len(self.rules)):
                 if self.rules[i] == s:
-                    tot += Ck[i]
+                    tot += util.C(N, i, self.n_states-1)
             return tot
         ent = 0
         for i in range(0, self.n_states):
-            p_s = n(i) / pow(self.n_states, 2*self.radius+1)
+            p_s = n(i) / pow(self.n_states, N)
             if p_s == 0:
                 continue
             else:

@@ -31,6 +31,18 @@ def choose(n, k):
     else:
         return 0
 
+cache = {}
+def C(N, k, m): 
+    'Counts number of ways N cells with max state m can sum to k'
+    if N <= 1:
+        return 1 if (m >= k) else 0
+    if k >= N*m/2:
+        k = N*m - k
+    if (N, k, m) in cache:
+        return cache[N, k, m]
+    result = sum(C(N-1, j, m) for j in range(max(k-m, 0), k+1))
+    cache[N, k, m] = result
+    return result
 
 def format_floats(floats):
     fstr = '  '.join('{:10.08f}' for _ in floats)
